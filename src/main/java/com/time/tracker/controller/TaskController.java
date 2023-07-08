@@ -50,9 +50,9 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteTask(@RequestBody TaskDeleteRequestDTO requestDTO) {
-        TaskDeleteDTO response = taskService.deleteTask(requestDTO);
+    @DeleteMapping("/delete/{userId}/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long taskId, @PathVariable Long userId) {
+        TaskDeleteDTO response = taskService.deleteTask(taskId, userId);
         return ResponseEntity.status(HttpStatus.GONE).body(response);
     }
 

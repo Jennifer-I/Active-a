@@ -134,20 +134,14 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     @Override
-    public TaskDeleteDTO deleteTask(TaskDeleteRequestDTO requestDTO) {
-        if (requestDTO.getTaskId() == null) {
-            throw new myOwnException("Invalid task ID");
-        }
-        if (requestDTO.getUserId() == null) {
-            throw new myOwnException("Invalid userId");
-        }
+    public TaskDeleteDTO deleteTask(Long taskId, Long userId) {
         //find the task by the Id
-        Optional<Task> task = taskRepository.findById(requestDTO.getTaskId());
+        Optional<Task> task = taskRepository.findById(taskId);
         if (task.isEmpty()) {
             throw new myOwnException("task nor dey", HttpStatus.NO_CONTENT);
         }
         //find the user using the giving id
-        Optional<AppUser> user = userRepository.findById(requestDTO.getUserId());
+        Optional<AppUser> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new myOwnException("the user not in the database");
         }

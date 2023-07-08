@@ -15,7 +15,7 @@ public interface ITaskService {
     List<TaskCreatedResponseDTO> getAllTasks(Long userId);
     List<TaskCreatedResponseDTO> getTasksByStatus(TaskStatusDTO request);
     TaskUpdatedDTO updateTask(Long taskId, TaskRequest request);
-    TaskDeleteDTO deleteTask(TaskDeleteRequestDTO requestDTO);
+    TaskDeleteDTO deleteTask(Long taskId, Long userId);
     TaskStatusResponseDTO moveTaskStatus(Status newStatus, Long userId, Long taskId);
     TaskCreatedResponseDTO getTaskById(Long taskId);
 }
