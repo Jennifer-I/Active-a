@@ -3,6 +3,7 @@ package com.time.tracker.Enums;
 public enum Status {
     PENDING,
     DONE,
-    IN_PROGRESS
+    IN_PROGRESS,
+    ToDo
 }
 
