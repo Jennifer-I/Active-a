@@ -12,7 +12,8 @@ public class ExceptionHandlerObj {
         return ResponseEntity.badRequest().body(es.getLocalizedMessage());
     }
 
-    public ResponseEntity<?>PasswordAndEmailNotFoundException(myOwnException e)
+    @ExceptionHandler(PasswordAndEmailNotFoundException.class)
+    public ResponseEntity<?>HandlePasswordAndEmailNotFoundException(PasswordAndEmailNotFoundException e)
     {
         return ResponseEntity.badRequest().body(e.getLocalizedMessage());
     }

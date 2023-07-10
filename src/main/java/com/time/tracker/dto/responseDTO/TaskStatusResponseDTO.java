@@ -14,6 +14,8 @@ public class TaskStatusResponseDTO {
     private String title;
     private String description;
     private Status status;
+    private LocalDateTime updatedAt;
     private LocalDateTime completedAt;
+
 
 }

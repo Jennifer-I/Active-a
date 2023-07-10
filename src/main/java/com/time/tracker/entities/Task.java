@@ -41,5 +41,8 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "appUser_id")
     private AppUser appUser;
+
+    public Task(long l, String title, String description, Status status, int i, AppUser user) {
+    }
 }
 

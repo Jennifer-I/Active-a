@@ -3,6 +3,7 @@ package com.time.tracker.services;
 import com.time.tracker.dto.requestDTO.UserLoginDTO;
 import com.time.tracker.dto.requestDTO.UserRequest;
 import com.time.tracker.dto.requestDTO.UserRequestEdithDTO;
+import com.time.tracker.dto.responseDTO.LoginResponsDTO;
 import com.time.tracker.dto.responseDTO.UserResponseDTO;
 import com.time.tracker.entities.AppUser;
 import com.time.tracker.exception.PasswordAndEmailNotFoundException;
@@ -40,23 +41,22 @@ public class AppUserServiceImpl implements IUserService {
         AppUser savedUser = userRepository.save(newUser);
 
         return UserResponseDTO.builder()
-                .id(savedUser.getId())
                 .name(savedUser.getName())
                 .email(savedUser.getEmail())
                 .build();
     }
 
     @Override
-    public UserResponseDTO login(UserLoginDTO request) {
+    public LoginResponsDTO login(UserLoginDTO request) {
         AppUser appUser = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new PasswordAndEmailNotFoundException("Person wey get the email nor dey our database bros"));
+                .orElseThrow(() -> new PasswordAndEmailNotFoundException("Person wey get the email nor dey our database bros",HttpStatus.NOT_FOUND));
 
         if (!request.getPassword().equals(appUser.getPassword())) {
-            throw new PasswordAndEmailNotFoundException("Omo check your email or your password");
+            throw new PasswordAndEmailNotFoundException("Omo check your email or your password", HttpStatus.NOT_FOUND);
         }
 
         // Login successful
-        UserResponseDTO responseDTO = UserResponseDTO.builder()
+        LoginResponsDTO responseDTO = LoginResponsDTO.builder()
                 .id(appUser.getId())
                 .name(appUser.getName())
                 .email(appUser.getEmail())
@@ -87,7 +87,6 @@ public class AppUserServiceImpl implements IUserService {
 
         // Build and return the response DTO
         UserResponseDTO responseDTO = UserResponseDTO.builder()
-                .id(updatedUser.getId())
                 .name(updatedUser.getName())
                 .email(updatedUser.getEmail())
                 .build();

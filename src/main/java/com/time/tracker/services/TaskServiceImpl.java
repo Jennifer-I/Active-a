@@ -1,9 +1,7 @@
 package com.time.tracker.services;
 
 import com.time.tracker.Enums.Status;
-import com.time.tracker.dto.requestDTO.TaskDeleteRequestDTO;
 import com.time.tracker.dto.requestDTO.TaskRequest;
-import com.time.tracker.dto.requestDTO.TaskStatusDTO;
 import com.time.tracker.dto.responseDTO.TaskCreatedResponseDTO;
 import com.time.tracker.dto.responseDTO.TaskDeleteDTO;
 import com.time.tracker.dto.responseDTO.TaskStatusResponseDTO;
@@ -81,8 +79,8 @@ public class TaskServiceImpl implements ITaskService {
         // Retrieve all tasks created by the user
         List<Task> tasks = taskRepository.findByAppUser(user);
 
-        // Map the tasks to TaskCreatedResponseDTO
-        List<TaskCreatedResponseDTO> responseDTOs = tasks.stream()
+        // Map the tasks to TaskCreatedResponseDTO and return
+        return tasks.stream()
                 .map(task -> TaskCreatedResponseDTO.builder()
                         .id(task.getId())
                         .title(task.getTitle())
@@ -91,22 +89,20 @@ public class TaskServiceImpl implements ITaskService {
                         .createdAt(task.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
-
-        return responseDTOs;
     }
 
     @Override
-    public List<TaskCreatedResponseDTO> getTasksByStatus(TaskStatusDTO request) {
+    public List<TaskCreatedResponseDTO> getTasksByStatus(Status status, Long userId) {
         // Get all tasks for the specified user
-        List<TaskCreatedResponseDTO> allTasks = getAllTasks(request.getUserId());
+        List<TaskCreatedResponseDTO> allTasks = getAllTasks(userId);
         // Filter tasks by the specified status and Return the filtered tasks
         return allTasks.stream()
-                .filter(task -> task.getStatus() == request.getStatus())
+                .filter(task -> task.getStatus().equals(status))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public TaskUpdatedDTO updateTask(Long taskId, TaskRequest request) {
+    public TaskUpdatedDTO updateTask(Long taskId, TaskRequest request, Long userId) {
         // Retrieve the task to be updated from the database
         Optional<Task> optionalTask = taskRepository.findById(taskId);
         if (optionalTask.isEmpty()) {
@@ -114,6 +110,11 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         Task existingTask = optionalTask.get();
+
+        // Check if the task belongs to the specified user
+        if (!existingTask.getAppUser().getId().equals(userId)) {
+            throw new myOwnException("Access denied. Task does not belong to the user");
+        }
 
         // Update the task properties with the values from the request
         existingTask.setTitle(request.getTitle());
@@ -132,6 +133,7 @@ public class TaskServiceImpl implements ITaskService {
                 .updated(updatedTask.getUpdatedAt())
                 .build();
     }
+
 
     @Override
     public TaskDeleteDTO deleteTask(Long taskId, Long userId) {
@@ -158,7 +160,7 @@ public class TaskServiceImpl implements ITaskService {
                 .id(existingTask.getId()).message(" Is Successfully deleted").build();
     }
     @Override
-    public TaskStatusResponseDTO moveTaskStatus(Status newStatus, Long userId, Long taskId) {
+    public TaskStatusResponseDTO moveTaskByStatus(Status newStatus, Long userId, Long taskId) {
         // Get the user
         Optional<AppUser> user = userRepository.findById(userId);
         if (user.isEmpty()) {
@@ -185,6 +187,9 @@ public class TaskServiceImpl implements ITaskService {
         if (newStatus == Status.DONE) {
             existingTask.setCompletedAt(LocalDateTime.now());
         }
+        else{
+            existingTask.setUpdatedAt(LocalDateTime.now());
+        }
 
         // Save the updated task
         taskRepository.save(existingTask);
@@ -194,6 +199,7 @@ public class TaskServiceImpl implements ITaskService {
                 .title(existingTask.getTitle())
                 .description(existingTask.getDescription())
                 .status(existingTask.getStatus())
+                .updatedAt(existingTask.getUpdatedAt())
                 .completedAt(existingTask.getCompletedAt())
                 .build();
     }
@@ -201,7 +207,7 @@ public class TaskServiceImpl implements ITaskService {
 
 
     @Override
-    public TaskCreatedResponseDTO getTaskById(Long taskId) {
+    public TaskCreatedResponseDTO getTaskById(Long taskId, Long userId) {
         // Get the task by the taskId using Optional
         Optional<Task> taskOptional = taskRepository.findById(taskId);
 
@@ -212,6 +218,11 @@ public class TaskServiceImpl implements ITaskService {
 
         // Retrieve the task object from the Optional
         Task task = taskOptional.get();
+
+        // Check if the task belongs to the specified user
+        if (!task.getAppUser().getId().equals(userId)) {
+            throw new myOwnException("Access denied. Task does not belong to YOU",HttpStatus.FORBIDDEN);
+        }
 
         // Create and return the response DTO
         TaskCreatedResponseDTO responseDTO = TaskCreatedResponseDTO.builder()
