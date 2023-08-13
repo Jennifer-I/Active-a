@@ -6,7 +6,7 @@ import com.time.tracker.dto.responseDTO.TaskCreatedResponseDTO;
 import com.time.tracker.dto.responseDTO.TaskDeleteDTO;
 import com.time.tracker.dto.responseDTO.TaskStatusResponseDTO;
 import com.time.tracker.dto.responseDTO.TaskUpdatedDTO;
-import com.time.tracker.exception.myOwnException;
+import com.time.tracker.exception.ApiResponse;
 import com.time.tracker.services.IService.ITaskService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class TaskController {
     public ResponseEntity<?> createTask(@RequestBody TaskRequest request, HttpSession session) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("Please login to be able to create a task");
+            throw new ApiResponse("Please login to be able to create a task");
         }
 
         TaskCreatedResponseDTO createdTask = taskService.createTask(request, userId);
@@ -41,7 +41,7 @@ public class TaskController {
     public ResponseEntity<List<TaskCreatedResponseDTO>> viewAllTasks(HttpSession session) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("logged in login to get all task");
+            throw new ApiResponse("logged in login to get all task");
         }
 
         List<TaskCreatedResponseDTO> tasks = taskService.getAllTasks(userId);
@@ -55,7 +55,7 @@ public class TaskController {
     ) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("Bros abeg try login before you can get this");
+            throw new ApiResponse("Bros abeg try login before you can get this");
         }
 
         List<TaskCreatedResponseDTO> tasks = taskService.getTasksByStatus(status, userId);
@@ -68,7 +68,7 @@ public class TaskController {
     public ResponseEntity<?> editTask(@PathVariable Long taskId, @RequestBody TaskRequest updatedTask, HttpSession session) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("User not logged in");
+            throw new ApiResponse("User not logged in");
         }
 
         TaskUpdatedDTO task = taskService.updateTask(taskId, updatedTask, userId);
@@ -80,7 +80,7 @@ public class TaskController {
     public ResponseEntity<?> deleteTask(@PathVariable Long taskId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("Bros abeg try login");
+            throw new ApiResponse("Bros abeg try login");
         }
 
         TaskDeleteDTO response = taskService.deleteTask(taskId, userId);
@@ -91,7 +91,7 @@ public class TaskController {
     public ResponseEntity<?> moveTaskStatus(@PathVariable Long taskId, HttpSession session, @RequestParam Status newStatus) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("User not logged in");
+            throw new ApiResponse("User not logged in");
         }
 
         TaskStatusResponseDTO task = taskService.moveTaskByStatus(newStatus, userId, taskId);
@@ -99,27 +99,12 @@ public class TaskController {
     }
 
 
-//    @PostMapping("/statusS/{userId}/{taskId}")
-//    public ResponseEntity<?> moveTaskStatus(
-//            @PathVariable Long taskId,
-//            @PathVariable Long userId,
-//            @RequestParam Status newStatus
-//    ) {
-//        TaskStatusResponseDTO task = taskService.moveTaskByStatus(newStatus, userId, taskId);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(task);
-//    }
-
-//    @GetMapping("/{taskId}")
-//    public ResponseEntity<TaskCreatedResponseDTO> getTaskById(@PathVariable Long taskId) {
-//        TaskCreatedResponseDTO task = taskService.getTaskById(taskId);
-//        return ResponseEntity.ok(task);
-//    }
 
     @GetMapping("/{taskId}")
     public ResponseEntity<TaskCreatedResponseDTO> viewParticularTask(@PathVariable Long taskId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("User not logged in");
+            throw new ApiResponse("User not logged in");
         }
 
         TaskCreatedResponseDTO task = taskService.getTaskById(taskId, userId);

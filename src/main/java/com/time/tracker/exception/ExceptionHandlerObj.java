@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ExceptionHandlerObj {
-    @ExceptionHandler(myOwnException.class)
-    public ResponseEntity<?>handleMyOwnException(myOwnException es)
+    @ExceptionHandler(ApiResponse.class)
+    public ResponseEntity<?>handleMyOwnException(ApiResponse es)
     {
         return ResponseEntity.badRequest().body(es.getLocalizedMessage());
     }

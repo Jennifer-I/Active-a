@@ -8,7 +8,7 @@ import com.time.tracker.dto.responseDTO.TaskStatusResponseDTO;
 import com.time.tracker.dto.responseDTO.TaskUpdatedDTO;
 import com.time.tracker.entities.AppUser;
 import com.time.tracker.entities.Task;
-import com.time.tracker.exception.myOwnException;
+import com.time.tracker.exception.ApiResponse;
 import com.time.tracker.repository.TaskRepository;
 import com.time.tracker.repository.UserRepository;
 import com.time.tracker.services.IService.ITaskService;
@@ -36,7 +36,7 @@ public class TaskServiceImpl implements ITaskService {
     public TaskCreatedResponseDTO createTask(TaskRequest request, Long userid) {
         Optional<AppUser> optionalAppUser = userRepository.findById(userid);
         if (optionalAppUser.isEmpty()) {
-            throw new myOwnException("Omo the person nor dey ooh");
+            throw new ApiResponse("Omo the person nor dey ooh");
         }
 
         AppUser appUser = optionalAppUser.get();
@@ -71,7 +71,7 @@ public class TaskServiceImpl implements ITaskService {
         // Find the user by ID
         Optional<AppUser> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            throw new myOwnException("User not found", HttpStatus.NOT_FOUND);
+            throw new ApiResponse("User not found", HttpStatus.NOT_FOUND);
         }
 
         AppUser user = userOptional.get();
@@ -106,14 +106,14 @@ public class TaskServiceImpl implements ITaskService {
         // Retrieve the task to be updated from the database
         Optional<Task> optionalTask = taskRepository.findById(taskId);
         if (optionalTask.isEmpty()) {
-            throw new myOwnException("Omo the task nor dey oo", HttpStatus.NO_CONTENT);
+            throw new ApiResponse("Omo the task nor dey oo", HttpStatus.NO_CONTENT);
         }
 
         Task existingTask = optionalTask.get();
 
         // Check if the task belongs to the specified user
         if (!existingTask.getAppUser().getId().equals(userId)) {
-            throw new myOwnException("Access denied. Task does not belong to the user");
+            throw new ApiResponse("Access denied. Task does not belong to the user");
         }
 
         // Update the task properties with the values from the request
@@ -140,19 +140,19 @@ public class TaskServiceImpl implements ITaskService {
         //find the task by the Id
         Optional<Task> task = taskRepository.findById(taskId);
         if (task.isEmpty()) {
-            throw new myOwnException("task nor dey", HttpStatus.NO_CONTENT);
+            throw new ApiResponse("task nor dey", HttpStatus.NO_CONTENT);
         }
         //find the user using the giving id
         Optional<AppUser> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            throw new myOwnException("the user not in the database");
+            throw new ApiResponse("the user not in the database");
         }
         //get both user and task
         Task existingTask = task.get();
         AppUser existingUser = user.get();
         //check if the user is the user that created the task
         if (!existingTask.getAppUser().getId().equals(existingUser.getId())) {
-            throw new myOwnException("You are not eligible to delete the task", HttpStatus.FORBIDDEN);
+            throw new ApiResponse("You are not eligible to delete the task", HttpStatus.FORBIDDEN);
         }
         //delete the task
         taskRepository.delete(existingTask);
@@ -164,20 +164,20 @@ public class TaskServiceImpl implements ITaskService {
         // Get the user
         Optional<AppUser> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            throw new myOwnException("User not found", HttpStatus.NOT_FOUND);
+            throw new ApiResponse("User not found", HttpStatus.NOT_FOUND);
         }
         AppUser user1 = user.get();
 
         // Get the task
         Optional<Task> task = taskRepository.findById(taskId);
         if (task.isEmpty()) {
-            throw new myOwnException("The task nor dey", HttpStatus.NOT_FOUND);
+            throw new ApiResponse("The task nor dey", HttpStatus.NOT_FOUND);
         }
         Task existingTask = task.get();
 
         // Check if the user is authorized to change the status
         if (!existingTask.getAppUser().getId().equals(user1.getId())) {
-            throw new myOwnException("Not authorized to change status", HttpStatus.FORBIDDEN);
+            throw new ApiResponse("Not authorized to change status", HttpStatus.FORBIDDEN);
         }
 
         // Update the task status
@@ -213,7 +213,7 @@ public class TaskServiceImpl implements ITaskService {
 
         // Check if the task exists
         if (taskOptional.isEmpty()) {
-            throw new myOwnException("Task not found", HttpStatus.NOT_FOUND);
+            throw new ApiResponse("Task not found", HttpStatus.NOT_FOUND);
         }
 
         // Retrieve the task object from the Optional
@@ -221,7 +221,7 @@ public class TaskServiceImpl implements ITaskService {
 
         // Check if the task belongs to the specified user
         if (!task.getAppUser().getId().equals(userId)) {
-            throw new myOwnException("Access denied. Task does not belong to YOU",HttpStatus.FORBIDDEN);
+            throw new ApiResponse("Access denied. Task does not belong to YOU",HttpStatus.FORBIDDEN);
         }
 
         // Create and return the response DTO

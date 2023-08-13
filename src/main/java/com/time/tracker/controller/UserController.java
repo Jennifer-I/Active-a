@@ -4,7 +4,7 @@ import com.time.tracker.dto.requestDTO.UserLoginDTO;
 import com.time.tracker.dto.requestDTO.UserRequest;
 import com.time.tracker.dto.requestDTO.UserRequestEdithDTO;
 import com.time.tracker.dto.responseDTO.UserResponseDTO;
-import com.time.tracker.exception.myOwnException;
+import com.time.tracker.exception.ApiResponse;
 import com.time.tracker.services.IService.IUserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class UserController {
     ) {
         Long userId = (Long) session.getAttribute("userid");
         if (userId == null) {
-            throw new myOwnException("You never log in ooo");
+            throw new ApiResponse("not logged in");
         }
 
         UserResponseDTO updatedUser = userService.updateUser(request, userId);

@@ -12,7 +12,7 @@ import com.time.tracker.services.IService.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import com.time.tracker.exception.myOwnException;
+import com.time.tracker.exception.ApiResponse;
 
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ public class AppUserServiceImpl implements IUserService {
     public UserResponseDTO registerUser(UserRequest userRequestDTO) {
         Optional<AppUser> user = userRepository.findByEmail(userRequestDTO.getEmail());
         if (user.isPresent()) {
-            throw new myOwnException("Person don dey database Bro!", HttpStatus.CONFLICT);
+            throw new ApiResponse("Person don dey database Bro!", HttpStatus.CONFLICT);
         }
 
         AppUser newUser = AppUser.builder()
@@ -72,7 +72,7 @@ public class AppUserServiceImpl implements IUserService {
 
         // Check if the user exists
         if (userOptional.isEmpty()) {
-            throw new myOwnException("User not found", HttpStatus.NOT_FOUND);
+            throw new ApiResponse("User not found", HttpStatus.NOT_FOUND);
         }
 
         // Retrieve the user object from the Optional
@@ -99,7 +99,7 @@ public class AppUserServiceImpl implements IUserService {
         // Check if the user exists
         Optional<AppUser> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            throw new myOwnException("User not found", HttpStatus.NOT_FOUND);
+            throw new ApiResponse("User not found", HttpStatus.NOT_FOUND);
         }
 
         // Delete the user

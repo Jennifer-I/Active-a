@@ -5,15 +5,15 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 @Getter
-public class myOwnException extends RuntimeException{
+public class ApiResponse extends RuntimeException{
     private String message;
     private final LocalDateTime time = LocalDateTime.now();
     private HttpStatus status;
 
-    public myOwnException(String message) {
+    public ApiResponse(String message) {
         this.message = message;
     }
-    public myOwnException(String message, HttpStatus status)
+    public ApiResponse(String message, HttpStatus status)
     {
         this.message = message;
         this.status = status;
